@@ -1,19 +1,11 @@
-// =========================================
-// MICKAELA Portfolio - Interactive Features
-// =========================================
-
 document.addEventListener('DOMContentLoaded', function() {
     
-    // =========================================
-    // SMOOTH SCROLLING FOR NAVIGATION LINKS
-    // =========================================
     const navLinks = document.querySelectorAll('.nav-link, .footer-link, .hero-cta a');
     
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             const href = this.getAttribute('href');
             
-            // Only apply smooth scroll to anchor links
             if (href.startsWith('#')) {
                 e.preventDefault();
                 const targetId = href.substring(1);
@@ -28,16 +20,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         behavior: 'smooth'
                     });
                     
-                    // Update active nav link
                     updateActiveNavLink(targetId);
                 }
             }
         });
     });
     
-    // =========================================
-    // ACTIVE NAVIGATION LINK ON SCROLL
-    // =========================================
     function updateActiveNavLink(sectionId) {
         document.querySelectorAll('.nav-link').forEach(link => {
             link.classList.remove('active');
@@ -47,7 +35,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Observe sections and update active link
     const sections = document.querySelectorAll('section[id]');
     const navbarHeight = document.querySelector('.navbar').offsetHeight;
     
@@ -68,10 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateActiveNavLink(current);
         }
     });
-    
-    // =========================================
-    // NAVBAR SHADOW ON SCROLL
-    // =========================================
+   
     const navbar = document.querySelector('.navbar');
     
     window.addEventListener('scroll', function() {
@@ -82,9 +66,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // =========================================
-    // CARD ANIMATION ON SCROLL
-    // =========================================
     const cards = document.querySelectorAll('.card');
     
     const observerOptions = {
@@ -98,7 +79,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 entry.target.style.opacity = '0';
                 entry.target.style.transform = 'translateY(20px)';
                 
-                // Trigger animation
                 setTimeout(() => {
                     entry.target.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
                     entry.target.style.opacity = '1';
@@ -114,34 +94,21 @@ document.addEventListener('DOMContentLoaded', function() {
         cardObserver.observe(card);
     });
     
-    // =========================================
-    // MOBILE MENU TOGGLE (FOR FUTURE USE)
-    // =========================================
-    // Add this functionality when implementing responsive menu
-    
-    // =========================================
-    // FORM VALIDATION (IF YOU ADD CONTACT FORM)
-    // =========================================
     const contactForm = document.querySelector('#contactForm');
     
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Add your form validation and submission logic here
             const formData = new FormData(contactForm);
             
             console.log('Form submitted with data:', Object.fromEntries(formData));
             
-            // Show success message
             alert('Thank you for your message! I will get back to you soon.');
             contactForm.reset();
         });
     }
     
-    // =========================================
-    // SMOOTH SCROLL TO TOP BUTTON (OPTIONAL)
-    // =========================================
     function createScrollToTopButton() {
         const scrollBtn = document.createElement('button');
         scrollBtn.innerHTML = '↑';
@@ -166,7 +133,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         document.body.appendChild(scrollBtn);
         
-        // Show/hide button based on scroll position
         window.addEventListener('scroll', function() {
             if (window.pageYOffset > 300) {
                 scrollBtn.style.display = 'block';
@@ -175,7 +141,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Scroll to top on click
         scrollBtn.addEventListener('click', function() {
             window.scrollTo({
                 top: 0,
@@ -183,7 +148,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        // Hover effect
         scrollBtn.addEventListener('mouseenter', function() {
             this.style.backgroundColor = 'var(--color-accent-orange)';
             this.style.transform = 'translateY(-5px)';
@@ -195,13 +159,76 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Uncomment to enable scroll-to-top button
-    // createScrollToTopButton();
-    
-    // =========================================
-    // CONSOLE MESSAGE
-    // =========================================
     console.log('%c👋 Welcome to MICKAELA\'s Portfolio!', 'color: #0A7EA4; font-size: 20px; font-weight: bold;');
     console.log('%cBuilt with ❤️ using HTML, CSS, and JavaScript', 'color: #666666; font-size: 14px;');
     
+});
+
+// Gallery Modal Functions
+let currentGallery = [];
+let currentImageIndex = 0;
+
+function openGallery(images, startIndex = 0) {
+    currentGallery = images;
+    currentImageIndex = startIndex;
+    showImage();
+    document.getElementById('imageModal').style.display = 'block';
+}
+
+function showImage() {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const counter = document.getElementById('modalCounter');
+    
+    modalImg.src = currentGallery[currentImageIndex];
+    counter.textContent = `${currentImageIndex + 1} / ${currentGallery.length}`;
+    
+    // Hide arrows if only one image
+    const prevBtn = document.querySelector('.modal-prev');
+    const nextBtn = document.querySelector('.modal-next');
+    if (currentGallery.length <= 1) {
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = 'none';
+    } else {
+        prevBtn.style.display = 'block';
+        nextBtn.style.display = 'block';
+    }
+}
+
+function changeImage(direction) {
+    currentImageIndex += direction;
+    
+    // Loop around
+    if (currentImageIndex >= currentGallery.length) {
+        currentImageIndex = 0;
+    } else if (currentImageIndex < 0) {
+        currentImageIndex = currentGallery.length - 1;
+    }
+    
+    showImage();
+}
+
+function closeModal() {
+    document.getElementById('imageModal').style.display = 'none';
+}
+
+// Close modal when clicking on background
+document.getElementById('imageModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', function(event) {
+    const modal = document.getElementById('imageModal');
+    if (modal && modal.style.display === 'block') {
+        if (event.key === 'Escape') {
+            closeModal();
+        } else if (event.key === 'ArrowLeft') {
+            changeImage(-1);
+        } else if (event.key === 'ArrowRight') {
+            changeImage(1);
+        }
+    }
 });
